@@ -1,0 +1,58 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String   @id @default(uuid())
+  email         String   @unique
+  password      String
+  boardsId      String[]
+  boards        Board[]  @relation("Boards")
+  statusListIds String[]
+  statusList    Status[] @relation("StatusList")
+  tasksId       String[]
+  tasks         Task[]   @relation("Tasks")
+
+  @@map("user")
+}
+
+model Board {
+  id        String   @id @default(uuid())
+  name      String
+  ownerId   String
+  owner     User     @relation(name: "Boards", fields: [ownerId], references: [id])
+  statusIds String[]
+  statuses  Status[] @relation("BoardStatuses")
+
+  @@map("board")
+}
+
+model Status {
+  id      String   @id @default(uuid())
+  title   String
+  ownerId String
+  owner   User     @relation(name: "StatusList", fields: [ownerId], references: [id])
+  tasksId String[]
+  tasks   Task[]   @relation("StatusTasks")
+  boardId String
+  board   Board    @relation(name: "BoardStatuses", fields: [boardId], references: [id])
+}
+
+model Task {
+  id          String   @id @default(uuid())
+  title       String
+  description String
+  subtasks    String[]
+  statusId    String
+  status      Status   @relation(name: "StatusTasks", fields: [statusId], references: [id])
+  ownerId     String
+  owner       User     @relation(name: "Tasks", fields: [ownerId], references: [id])
+}
