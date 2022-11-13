@@ -12,18 +12,17 @@ export default async (req: Request, res: TypedResponse<null>, next: NextFunction
         error: true,
         errorMessage: 'Something wrong happened on our end!',
         data: null
-      });
+      }).locals.userId = null;
       return;
     }
 
-    const userId = res.locals.userId;
     const token = req.cookies['refreshToken'];
     if (!token) {
       res.status(401).json({
         error: true,
         errorMessage: 'Invalid refresh token!',
         data: null
-      });
+      }).locals.userId = null;
       return;
     }
 
@@ -33,16 +32,18 @@ export default async (req: Request, res: TypedResponse<null>, next: NextFunction
         error: true,
         errorMessage: 'Invalid refresh token!',
         data: null
-      });
+      }).locals.userId = null;
       return;
     }
+
+    const userId = decoded.sub;
 
     if (Date.now() >= decoded.exp * 1000) {
       res.status(401).json({
         error: true,
         errorMessage: 'Invalid refresh token!',
         data: null
-      });
+      }).locals.userId = null;
       return;
     }
 
@@ -51,7 +52,7 @@ export default async (req: Request, res: TypedResponse<null>, next: NextFunction
         error: true,
         errorMessage: 'Invalid refresh token!',
         data: null
-      });
+      }).locals.userId = null;
       return;
     }
 
@@ -65,7 +66,7 @@ export default async (req: Request, res: TypedResponse<null>, next: NextFunction
         error: true,
         errorMessage: 'Unathorized to perform this operation!',
         data: null
-      });
+      }).locals.userId = null;
       return;
     }
 
@@ -75,10 +76,11 @@ export default async (req: Request, res: TypedResponse<null>, next: NextFunction
         error: true,
         errorMessage: 'You are not authorized to access this data!',
         data: null
-      });
+      }).locals.userId = null;
       return;
     }
 
+    res.locals.userId = userId;
     next();
   } catch (error) {
     console.error(error);

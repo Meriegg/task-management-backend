@@ -4,7 +4,13 @@ import argon from 'argon2';
 import handleError from '../utils/handleError';
 import { randomBytes } from 'crypto';
 import { Request } from 'express';
-import { TypedResponse, AuthReturnType, AuthBody, RefreshTokenReturnType } from '../types';
+import {
+  TypedResponse,
+  AuthReturnType,
+  AuthBody,
+  RefreshTokenReturnType,
+  GetUserDataReturnType
+} from '../types';
 
 const createAuthToken = (userId: string): string | null => {
   const JWT_SECRET = process.env.JWT_SECRET;
@@ -192,6 +198,41 @@ export const refreshToken = async (_: Request, res: TypedResponse<RefreshTokenRe
       data: {
         newAuthToken,
         newRefreshToken
+      }
+    });
+  } catch (error) {
+    handleError(res, error);
+  }
+};
+
+export const getUserData = async (_: Request, res: TypedResponse<GetUserDataReturnType>) => {
+  try {
+    const userId = res.locals.userId;
+
+    const userData = await prisma.user.findUnique({
+      where: {
+        id: userId
+      },
+      include: {
+        boards: true,
+        statusList: true,
+        tasks: true
+      }
+    });
+    if (!userData) {
+      res.status(404).json({
+        error: true,
+        errorMessage: 'Could not get user data!',
+        data: null
+      });
+      return;
+    }
+
+    res.status(200).json({
+      error: false,
+      errorMessage: null,
+      data: {
+        userData
       }
     });
   } catch (error) {
