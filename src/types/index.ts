@@ -1,4 +1,8 @@
-import type { Response } from 'express';
+export * from './api/index';
+export * from './api/auth';
+export * from './api/boards';
+export * from './api/status';
+export * from './api/task';
 
 export interface User {
   id: string;
@@ -42,27 +46,3 @@ export interface Status {
   tasks?: Task[];
   board?: Board;
 }
-
-export interface AuthBody {
-  email: string;
-  password: string;
-}
-
-export interface RefreshTokenReturnType {
-  newRefreshToken: string;
-  newAuthToken: string;
-}
-
-export interface AuthReturnType {
-  user: User;
-  authToken: string;
-  refreshToken: string;
-}
-
-export interface ControllerReturnType<T> {
-  error: boolean;
-  errorMessage: string | null;
-  data: T | null;
-}
-
-export type TypedResponse<T> = Response<ControllerReturnType<T>>;
