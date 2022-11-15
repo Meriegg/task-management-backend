@@ -10,3 +10,15 @@ export interface CreateTaskBody {
 export interface CreateTaskReturnType {
   newTask: Task;
 }
+
+export interface GetTasksReturnType {
+  tasks: Task[];
+}
+
+export interface DeleteTaskReturnType {
+  deletedTask: Task;
+}
+
+export interface EditTaskReturnType {
+  editedTask: Task;
+}
