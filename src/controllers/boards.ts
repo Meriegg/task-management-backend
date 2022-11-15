@@ -59,7 +59,11 @@ export const editBoard = async (req: Request, res: TypedResponse<CreateBoardRetu
       },
       include: {
         owner: true,
-        statuses: true
+        statuses: {
+          include: {
+            tasks: true
+          }
+        }
       }
     });
 
@@ -85,7 +89,11 @@ export const getBoards = async (_: Request, res: TypedResponse<GetBoardsReturnTy
       },
       include: {
         owner: true,
-        statuses: true
+        statuses: {
+          include: {
+            tasks: true
+          }
+        }
       }
     });
     if (!boards) {
